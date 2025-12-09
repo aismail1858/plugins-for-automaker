@@ -25,7 +25,8 @@
     "category": "Kanban",
     "description": "When adding a new feature inside the modal there's an add feature button. Can you add a shortcut of shift? Enter which if you click shift enter I'll automatically add it in",
     "steps": [],
-    "status": "in_progress"
+    "status": "in_progress",
+    "startedAt": "2025-12-09T13:42:25.384Z"
   },
   {
     "id": "feature-1765287141131-dz489etgj",
@@ -33,7 +34,7 @@
     "description": "When I edit a card, it's showing an input for the description refactor to also show a text area for description like we do on the add card, add feature card.",
     "steps": [],
     "status": "in_progress",
-    "startedAt": "2025-12-09T13:41:48.094Z"
+    "startedAt": "2025-12-09T13:42:25.470Z"
   },
   {
     "id": "feature-1765287613626-z01cksyg6",
@@ -48,7 +49,6 @@
     "category": "Kanban",
     "description": " Change the shortcut key for the add new feature from shift enter to command enter",
     "steps": [],
-    "status": "in_progress",
-    "startedAt": "2025-12-09T13:40:55.298Z"
+    "status": "verified"
   }
 ]
