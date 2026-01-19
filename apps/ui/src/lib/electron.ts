@@ -2024,6 +2024,20 @@ function createMockWorktreeAPI(): WorktreeAPI {
         console.log('[Mock] Unsubscribing from init script events');
       };
     },
+
+    discardChanges: async (worktreePath: string) => {
+      console.log('[Mock] Discarding changes:', { worktreePath });
+      return {
+        success: true,
+        result: {
+          discarded: true,
+          filesDiscarded: 0,
+          filesRemaining: 0,
+          branch: 'main',
+          message: 'Mock: Changes discarded successfully',
+        },
+      };
+    },
   };
 }
 

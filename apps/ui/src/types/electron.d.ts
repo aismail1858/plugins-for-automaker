@@ -1218,6 +1218,19 @@ export interface WorktreeAPI {
       payload: unknown;
     }) => void
   ) => () => void;
+
+  // Discard changes for a worktree
+  discardChanges: (worktreePath: string) => Promise<{
+    success: boolean;
+    result?: {
+      discarded: boolean;
+      filesDiscarded: number;
+      filesRemaining: number;
+      branch: string;
+      message: string;
+    };
+    error?: string;
+  }>;
 }
 
 export interface GitAPI {

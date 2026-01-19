@@ -1851,6 +1851,8 @@ export class HttpApiClient implements ElectronAPI {
       this.httpDelete('/api/worktree/init-script', { projectPath }),
     runInitScript: (projectPath: string, worktreePath: string, branch: string) =>
       this.post('/api/worktree/run-init-script', { projectPath, worktreePath, branch }),
+    discardChanges: (worktreePath: string) =>
+      this.post('/api/worktree/discard-changes', { worktreePath }),
     onInitScriptEvent: (
       callback: (event: {
         type: 'worktree:init-started' | 'worktree:init-output' | 'worktree:init-completed';

@@ -25,11 +25,13 @@ import {
   AlertCircle,
   RefreshCw,
   Copy,
+  Eye,
   ScrollText,
   Terminal,
   SquarePlus,
   SplitSquareHorizontal,
   Zap,
+  Undo2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -65,6 +67,8 @@ interface WorktreeActionsDropdownProps {
   onOpenInEditor: (worktree: WorktreeInfo, editorCommand?: string) => void;
   onOpenInIntegratedTerminal: (worktree: WorktreeInfo, mode?: 'tab' | 'split') => void;
   onOpenInExternalTerminal: (worktree: WorktreeInfo, terminalId?: string) => void;
+  onViewChanges: (worktree: WorktreeInfo) => void;
+  onDiscardChanges: (worktree: WorktreeInfo) => void;
   onCommit: (worktree: WorktreeInfo) => void;
   onCreatePR: (worktree: WorktreeInfo) => void;
   onAddressPRComments: (worktree: WorktreeInfo, prInfo: PRInfo) => void;
@@ -99,6 +103,8 @@ export function WorktreeActionsDropdown({
   onOpenInEditor,
   onOpenInIntegratedTerminal,
   onOpenInExternalTerminal,
+  onViewChanges,
+  onDiscardChanges,
   onCommit,
   onCreatePR,
   onAddressPRComments,
@@ -434,6 +440,13 @@ export function WorktreeActionsDropdown({
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
+
+        {worktree.hasChanges && (
+          <DropdownMenuItem onClick={() => onViewChanges(worktree)} className="text-xs">
+            <Eye className="w-3.5 h-3.5 mr-2" />
+            View Changes
+          </DropdownMenuItem>
+        )}
         {worktree.hasChanges && (
           <TooltipWrapper
             showTooltip={!gitRepoStatus.isGitRepo}
@@ -509,9 +522,30 @@ export function WorktreeActionsDropdown({
             </DropdownMenuItem>
           </>
         )}
+        <DropdownMenuSeparator />
+        {worktree.hasChanges && (
+          <TooltipWrapper
+            showTooltip={!gitRepoStatus.isGitRepo}
+            tooltipContent="Not a git repository"
+          >
+            <DropdownMenuItem
+              onClick={() => gitRepoStatus.isGitRepo && onDiscardChanges(worktree)}
+              disabled={!gitRepoStatus.isGitRepo}
+              className={cn(
+                'text-xs text-destructive focus:text-destructive',
+                !gitRepoStatus.isGitRepo && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              <Undo2 className="w-3.5 h-3.5 mr-2" />
+              Discard Changes
+              {!gitRepoStatus.isGitRepo && (
+                <AlertCircle className="w-3 h-3 ml-auto text-muted-foreground" />
+              )}
+            </DropdownMenuItem>
+          </TooltipWrapper>
+        )}
         {!worktree.isMain && (
           <>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => onDeleteWorktree(worktree)}
               className="text-xs text-destructive focus:text-destructive"
