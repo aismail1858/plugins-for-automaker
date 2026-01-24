@@ -8,7 +8,7 @@
 import * as secureFs from '../../lib/secure-fs.js';
 import type { EventEmitter } from '../../lib/events.js';
 import { createLogger } from '@automaker/utils';
-import { DEFAULT_PHASE_MODELS, supportsStructuredOutput } from '@automaker/types';
+import { DEFAULT_PHASE_MODELS, supportsStructuredOutput, isCodexModel } from '@automaker/types';
 import { resolvePhaseModel } from '@automaker/model-resolver';
 import { streamingQuery } from '../../providers/simple-query-service.js';
 import { parseAndCreateFeatures } from './parse-and-create-features.js';
@@ -25,6 +25,12 @@ import { FeatureLoader } from '../../services/feature-loader.js';
 const logger = createLogger('SpecRegeneration');
 
 const DEFAULT_MAX_FEATURES = 50;
+
+/**
+ * Timeout for Codex models when generating features (5 minutes).
+ * Codex models are slower and need more time to generate 50+ features.
+ */
+const CODEX_FEATURE_GENERATION_TIMEOUT_MS = 300000; // 5 minutes
 
 /**
  * Type for extracted features JSON response
@@ -189,9 +195,22 @@ Generate ${featureCount} NEW features that build on each other logically. Rememb
         provider: undefined,
         credentials: undefined,
       };
-  const { model, thinkingLevel } = resolvePhaseModel(phaseModelEntry);
+  const { model, thinkingLevel, reasoningEffort } = resolvePhaseModel(phaseModelEntry);
 
   logger.info('Using model:', model, provider ? `via provider: ${provider.name}` : 'direct API');
+
+  // Codex models need extended timeout for generating many features.
+  // Use 'xhigh' reasoning effort to get 5-minute timeout (300s base * 1.0x = 300s).
+  // The Codex provider has a special 5-minute base timeout for feature generation.
+  const isCodex = isCodexModel(model);
+  const effectiveReasoningEffort = isCodex ? 'xhigh' : reasoningEffort;
+
+  if (isCodex) {
+    logger.info('Codex model detected - using extended timeout (5 minutes for feature generation)');
+  }
+  if (effectiveReasoningEffort) {
+    logger.info('Reasoning effort:', effectiveReasoningEffort);
+  }
 
   // Determine if we should use structured output based on model type
   const useStructuredOutput = supportsStructuredOutput(model);
@@ -239,6 +258,7 @@ Your entire response should be valid JSON starting with { and ending with }. No 
     allowedTools: ['Read', 'Glob', 'Grep'],
     abortController,
     thinkingLevel,
+    reasoningEffort: effectiveReasoningEffort, // Extended timeout for Codex models
     readOnly: true, // Feature generation only reads code, doesn't write
     settingSources: autoLoadClaudeMd ? ['user', 'project', 'local'] : undefined,
     claudeCompatibleProvider: provider, // Pass provider for alternative endpoint configuration
