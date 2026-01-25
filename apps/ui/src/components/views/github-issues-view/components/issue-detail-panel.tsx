@@ -87,7 +87,7 @@ export function IssueDetailPanel({
             if (isValidating) {
               return (
                 <Button variant="default" size="sm" disabled>
-                  <Spinner size="sm" className="mr-1" />
+                  <Spinner size="sm" variant="foreground" className="mr-1" />
                   Validating...
                 </Button>
               );
