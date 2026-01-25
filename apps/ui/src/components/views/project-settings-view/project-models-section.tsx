@@ -380,8 +380,7 @@ function PhaseGroup({
  * Renders the per-project model overrides UI for all phase models.
  */
 export function ProjectModelsSection({ project }: ProjectModelsSectionProps) {
-  const { clearAllProjectPhaseModelOverrides, claudeCompatibleProviders } =
-    useAppStore();
+  const { clearAllProjectPhaseModelOverrides, claudeCompatibleProviders } = useAppStore();
   const [showBulkReplace, setShowBulkReplace] = useState(false);
 
   // Count how many overrides are set (including defaultFeatureModel)
