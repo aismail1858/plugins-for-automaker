@@ -3,7 +3,8 @@ import type { NavigateOptions } from '@tanstack/react-router';
 import { ChevronDown, Wrench, Github, Folder } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, isMac } from '@/lib/utils';
+import { isElectron } from '@/lib/electron';
 import { formatShortcut, useAppStore } from '@/store/app-store';
 import { getAuthenticatedImageUrl } from '@/lib/api-fetch';
 import type { NavSection } from '../types';
@@ -117,7 +118,8 @@ export function SidebarNavigation({
       className={cn(
         'flex-1 overflow-y-auto scrollbar-hide px-3 pb-2',
         // Add top padding in discord mode since there's no header
-        sidebarStyle === 'discord' ? 'pt-3' : 'mt-1'
+        // Extra padding for macOS Electron to avoid traffic light overlap
+        sidebarStyle === 'discord' ? (isMac && isElectron() ? 'pt-[38px]' : 'pt-3') : 'mt-1'
       )}
     >
       {/* Project name display for classic/discord mode */}
