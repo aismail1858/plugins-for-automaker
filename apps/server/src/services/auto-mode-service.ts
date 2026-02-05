@@ -2662,8 +2662,64 @@ Address the follow-up instructions above. Review the previous work and make the 
           )}\n\nImplemented by Automaker auto-mode`
         : `feat: Feature ${featureId}`;
 
-      // Stage and commit
-      await execAsync('git add -A', { cwd: workDir });
+      // Determine which files to stage
+      // For feature branches, only stage files changed on this branch to avoid committing unrelated changes
+      let filesToStage: string[] = [];
+
+      try {
+        // Get the current branch
+        const { stdout: currentBranch } = await execAsync('git rev-parse --abbrev-ref HEAD', {
+          cwd: workDir,
+        });
+        const branch = currentBranch.trim();
+
+        // Get the base branch (usually main/master)
+        const { stdout: baseBranchOutput } = await execAsync(
+          'git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null || echo "refs/remotes/origin/main"',
+          { cwd: workDir }
+        );
+        const baseBranch = baseBranchOutput.trim().replace('refs/remotes/origin/', '');
+
+        // If we're on a feature branch (not the base branch), only stage files changed on this branch
+        if (branch !== baseBranch && feature?.branchName) {
+          try {
+            // Get files changed on this branch compared to base
+            const { stdout: branchFiles } = await execAsync(
+              `git diff --name-only ${baseBranch}...HEAD`,
+              { cwd: workDir }
+            );
+
+            if (branchFiles.trim()) {
+              filesToStage = branchFiles.trim().split('\n').filter(Boolean);
+              logger.info(`Staging ${filesToStage.length} files changed on branch ${branch}`);
+            }
+          } catch (diffError) {
+            // If diff fails (e.g., base branch doesn't exist), fall back to staging all changes
+            logger.warn(`Could not diff against base branch, staging all changes: ${diffError}`);
+            filesToStage = [];
+          }
+        }
+      } catch (error) {
+        logger.warn(`Could not determine branch-specific files: ${error}`);
+      }
+
+      // Stage files
+      if (filesToStage.length > 0) {
+        // Stage only the specific files changed on this branch
+        for (const file of filesToStage) {
+          try {
+            await execAsync(`git add "${file.replace(/"/g, '\\"')}"`, { cwd: workDir });
+          } catch (error) {
+            logger.warn(`Failed to stage file ${file}: ${error}`);
+          }
+        }
+      } else {
+        // Fallback: stage all changes (original behavior)
+        // This happens for main branch features or when branch detection fails
+        await execAsync('git add -A', { cwd: workDir });
+      }
+
+      // Commit
       await execAsync(`git commit -m "${commitMessage.replace(/"/g, '\\"')}"`, {
         cwd: workDir,
       });
