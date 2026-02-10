@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "id": "last-message",
+      "name": "Last Message Navigator",
+      "version": "1.0.0",
+      "description": "Navigate through last messages with arrow keys, TAB to insert, copy to clipboard",
+      "author": "aismail1858",
+      "path": "plugins/last-message",
+      "categories": ["productivity"]
+    }
+  ]
+}
