@@ -2,6 +2,24 @@
   "version": "1.0.0",
   "plugins": [
     {
+      "id": "bmad-framework",
+      "name": "BMAD-METHOD Framework",
+      "version": "1.0.0",
+      "description": "Agile AI development framework with structured phases (Brainstorming, Architecture, Development, Testing) and specialized agent personas",
+      "author": "Automaker",
+      "path": "plugins/bmad-framework",
+      "categories": ["framework", "development", "agile"]
+    },
+    {
+      "id": "context-test",
+      "name": "Plugin Context API Test",
+      "version": "1.0.0",
+      "description": "Tests all PluginContext API methods to verify they work correctly",
+      "author": "Automaker",
+      "path": "plugins/context-test",
+      "categories": ["testing", "development"]
+    },
+    {
       "id": "last-message",
       "name": "Last Message Navigator",
       "version": "1.0.0",

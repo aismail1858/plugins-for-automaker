@@ -1,0 +1,83 @@
+{
+  "name": "bmad-framework",
+  "version": "1.0.0",
+  "description": "BMAD-METHOD Framework - Agile AI development framework with structured phases (Brainstorming, Architecture, Development, Testing) and specialized agent personas (Master, SM, DEV, QA, Architect)",
+  "author": "Automaker",
+  "main": "dist/index.js",
+  "clientMain": "dist/client.js",
+  "automakerVersion": ">=0.14.0",
+  "homepage": "https://github.com/automaker/automaker",
+  "license": "MIT",
+  "keywords": ["bmad", "agile", "framework", "phases", "personas", "development"],
+  "sandbox": "direct",
+  "permissions": ["network", "storage", "ui_access", "keyboard", "notifications"],
+  "configuration": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "title": "Enable BMAD Framework",
+        "description": "Enable or disable the BMAD methodology for feature development",
+        "default": true
+      },
+      "defaultComplexity": {
+        "type": "string",
+        "title": "Default Complexity",
+        "description": "Default complexity level for phase estimation",
+        "enum": ["simple", "moderate", "complex", "very-complex"],
+        "default": "moderate"
+      },
+      "usePersonas": {
+        "type": "boolean",
+        "title": "Use BMAD Personas",
+        "description": "Apply specialized agent personas during execution",
+        "default": true
+      },
+      "trackPhases": {
+        "type": "boolean",
+        "title": "Track Phases",
+        "description": "Track progress through BMAD phases",
+        "default": true
+      },
+      "masterEnabled": {
+        "type": "boolean",
+        "title": "Enable Master Persona",
+        "description": "Enable the Master Agent persona",
+        "default": true
+      },
+      "smEnabled": {
+        "type": "boolean",
+        "title": "Enable Scrum Master Persona",
+        "description": "Enable the Scrum Master persona",
+        "default": true
+      },
+      "devEnabled": {
+        "type": "boolean",
+        "title": "Enable Developer Persona",
+        "description": "Enable the Developer persona",
+        "default": true
+      },
+      "qaEnabled": {
+        "type": "boolean",
+        "title": "Enable QA Persona",
+        "description": "Enable the QA Engineer persona",
+        "default": true
+      },
+      "architectEnabled": {
+        "type": "boolean",
+        "title": "Enable Architect Persona",
+        "description": "Enable the Software Architect persona",
+        "default": true
+      }
+    }
+  },
+  "extensionPoints": [
+    {
+      "id": "bmad-agent-enhancer",
+      "type": "agent-enhancement",
+      "config": {
+        "priority": 100
+      }
+    }
+  ]
+}

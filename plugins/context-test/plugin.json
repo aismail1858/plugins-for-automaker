@@ -1,0 +1,11 @@
+{
+  "id": "context-test",
+  "name": "Plugin Context API Test",
+  "version": "1.0.0",
+  "description": "Tests all PluginContext API methods to verify they work correctly",
+  "author": "Automaker",
+  "main": "index.js",
+  "categories": ["testing", "development"],
+  "sandbox": "iframe",
+  "permissions": ["ui_access", "clipboard", "notifications"]
+}

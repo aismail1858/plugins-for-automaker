@@ -1,0 +1,42 @@
+{
+  "name": "bmad-framework",
+  "version": "1.0.0",
+  "description": "BMAD-METHOD Framework - Agile AI development framework with structured phases and specialized agent personas",
+  "author": "Automaker",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "clientMain": "dist/client.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "bmad",
+    "agile",
+    "framework",
+    "phases",
+    "personas",
+    "development",
+    "automaker"
+  ],
+  "peerDependencies": {
+    "@automaker/plugin-types": ">=0.14.0"
+  },
+  "devDependencies": {
+    "@automaker/plugin-types": "workspace:*",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {}
+}
