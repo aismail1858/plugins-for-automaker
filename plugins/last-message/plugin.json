@@ -1,9 +1,10 @@
 {
   "id": "last-message",
   "name": "Last Message Navigator",
-  "version": "1.0.0",
-  "description": "Navigate through last messages with arrow keys, TAB to insert, copy to clipboard",
+  "version": "1.1.0",
+  "description": "Navigate through last messages with arrow keys, TAB to insert, copy to clipboard, Ctrl+D to delete",
   "author": "aismail1858",
   "main": "index.js",
-  "categories": ["productivity"]
+  "categories": ["productivity"],
+  "permissions": ["ui_access", "keyboard", "notifications"]
 }

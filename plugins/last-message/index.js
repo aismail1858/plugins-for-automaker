@@ -5,6 +5,7 @@
  * - Arrow Up/Down: Navigate through last user messages (shows in input)
  * - TAB: Insert message into input (does NOT send)
  * - Ctrl+C: Copy last message to clipboard
+ * - Ctrl+D or Delete: Delete currently navigated message
  * - ESC: Restore original input and exit navigation mode
  */
 
@@ -12,10 +13,19 @@ let messageIndex = -1;
 let originalInput = '';
 let lastNavigatedInput = '';
 
+// Store message IDs to support deletion
+let messageIds = [];
+let currentMessageId = null;
+
 exports.activate = function(context) {
   context.onChatKeyDown((event) => {
     const messages = context.getMessages();
-    const userMessages = messages.filter(m => m.role === 'user').map(m => m.content);
+    const userMessages = messages.filter(m => m.role === 'user');
+
+    // Update message IDs on first call
+    if (messageIds.length !== userMessages.length) {
+      messageIds = userMessages.map(m => m.id);
+    }
 
     // Arrow Up: Show previous user message
     if (event.key === 'ArrowUp') {
@@ -28,8 +38,9 @@ exports.activate = function(context) {
         if (messageIndex === -1) originalInput = context.getInput();
         messageIndex++;
         const msg = userMessages[userMessages.length - 1 - messageIndex];
-        context.setInput(msg);
-        lastNavigatedInput = msg;
+        currentMessageId = msg.id;
+        context.setInput(msg.content);
+        lastNavigatedInput = msg.content;
         context.showToast('info', `${userMessages.length - messageIndex}/${userMessages.length}`);
       } else {
         context.showToast('info', 'At oldest message');
@@ -43,11 +54,13 @@ exports.activate = function(context) {
       if (messageIndex > 0) {
         messageIndex--;
         const msg = userMessages[userMessages.length - 1 - messageIndex];
-        context.setInput(msg);
-        lastNavigatedInput = msg;
+        currentMessageId = msg.id;
+        context.setInput(msg.content);
+        lastNavigatedInput = msg.content;
         context.showToast('info', `${userMessages.length - messageIndex}/${userMessages.length}`);
       } else if (messageIndex === 0) {
         messageIndex = -1;
+        currentMessageId = null;
         context.setInput(originalInput);
         lastNavigatedInput = originalInput;
         context.showToast('info', 'Back to original input');
@@ -59,6 +72,7 @@ exports.activate = function(context) {
     if (event.key === 'Tab') {
       event.preventDefault();
       messageIndex = -1;
+      currentMessageId = null;
       context.showToast('success', 'Message inserted! Press Enter to send.');
       return true;
     }
@@ -68,10 +82,31 @@ exports.activate = function(context) {
       event.preventDefault();
       if (userMessages.length > 0) {
         const lastMessage = userMessages[userMessages.length - 1];
-        context.copyToClipboard(lastMessage);
+        context.copyToClipboard(lastMessage.content);
         context.showToast('success', 'Last message copied!');
       } else {
         context.showToast('info', 'No messages to copy');
+      }
+      return true;
+    }
+
+    // Ctrl+D or Delete: Delete currently navigated message
+    if ((event.ctrlKey && event.key === 'd') || (event.key === 'Delete' && messageIndex >= 0)) {
+      event.preventDefault();
+      if (currentMessageId && messageIndex >= 0) {
+        // Emit delete event through the plugin event bus
+        if (typeof window !== 'undefined' && (window as any).pluginEventBus) {
+          (window as any).pluginEventBus.emit('deleteMessage', currentMessageId);
+          context.showToast('success', 'Message deleted!');
+          // Reset navigation state
+          messageIndex = -1;
+          currentMessageId = null;
+          context.setInput(originalInput);
+        } else {
+          context.showToast('error', 'Delete not available - event bus not found');
+        }
+      } else {
+        context.showToast('info', 'Navigate to a message first (Arrow Up/Down)');
       }
       return true;
     }
@@ -80,6 +115,7 @@ exports.activate = function(context) {
     if (event.key === 'Escape' && messageIndex >= 0) {
       event.preventDefault();
       messageIndex = -1;
+      currentMessageId = null;
       context.setInput(originalInput);
       lastNavigatedInput = originalInput;
       context.showToast('info', 'Navigation cancelled');
